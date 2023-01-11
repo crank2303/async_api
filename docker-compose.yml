@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:13-alpine3.17
+    container_name: PostgresDB
+    restart: on-failure
+    volumes:
+        - postgres_volume:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    networks:
+      - ???
+
+
+  redis:
+    image: redis:7-alpine3.17
+    container_name: Redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    volumes:
+      - cache:/data
+    expose:
+      - 6379
+    restart: always
+    networks:
+      - ???
+
+
+  api:
+    container_name: FastAPI
+    build: ./fastapi-solution
+    env_file:
+      - .env
+    expose:
+      - 8000
+    restart: always
+    networks:
+      - ???
+
+  nginx:
+    image: nginx:latest
+    container_name: Nginx
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    ports:
+      - "8082:80"
+    networks:
+      - ??
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: SwaggerAPI
+    volumes:
+      - ./openapi/openapi.yaml:/swagger.yaml
+    env_file:
+      - ./.env
+    ports:
+      - "8888:8888"
+    networks:
+      - ???
+
+
+  elasticsearch:
+    image: docker.io/elastic/elasticsearch:7.17.5
+    container_name: Elasticsearch
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "xpack.security.enabled=false"
+      - "USE_SSL=false"
+    env_file:
+      - .env
+    ports:
+      - "9200:9200"
+    restart: unless-stopped
+    volumes:
+      - elasticsearch_volume:/var/lib/elasticsearch/data
+    networks:
+      - ???
+
+  etl:
+    container_name: nap_sprint_3_etl
+    build: ./etl
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - ???
+
+
+networks:
+  ???:
+
+volumes:
+  postgres_volume:
+  media_volume:
+  static_volume:
+  elasticsearch_volume:
+  cache:
