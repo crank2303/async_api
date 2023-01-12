@@ -1,18 +1,15 @@
-import orjson
+from mixins import MixinUUID, MixinConfig
+from genre import Genre
+from person import Person
 
-# Используем pydantic для упрощения работы при перегонке данных из json в объекты
-from pydantic import BaseModel
 
-def orjson_dumps(v, *, default):
-    # orjson.dumps возвращает bytes, а pydantic требует unicode, поэтому декодируем
-    return orjson.dumps(v, default=default).decode()
+class Film(MixinUUID, MixinConfig):
+    imdb_rating: float = 0.0
+    genre: list[Genre]
+    title: str = ''
+    description: str = ''
+    director: list[Person]
+    actor_names: list[Person]
+    writers_name: list[Person]
 
-class Film(BaseModel):
-    id: str
-    title: str
-    description: str
 
-    class Config:
-        # Заменяем стандартную работу с json на более быструю
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
