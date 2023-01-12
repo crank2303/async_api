@@ -10,6 +10,6 @@ class Film(MixinUUID, MixinConfig):
     description: str = ''
     director: list[Person]
     actor_names: list[Person]
-    writers_name: list[Person]
+    writer_names: list[Person]
 
 
