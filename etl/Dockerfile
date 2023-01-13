@@ -1,7 +1,7 @@
-FROM python:3.9
+FROM python:3.10
+
 WORKDIR /etl
 COPY requirements.txt .
-RUN  pip install --upgrade pip \
-     && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
-CMD ["python", "load_data.py"]
+CMD python main.py
