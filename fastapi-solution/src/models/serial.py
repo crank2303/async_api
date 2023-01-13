@@ -4,9 +4,9 @@ from person import Person
 
 
 class Serial(MixinUUID, MixinConfig):
-    title: str
+    title: str = ''
     imdb_rating: float = 0.0
-    description: str
+    description: str = ''
     genre: list[Genre]
     actors: list[Person]
     writers: list[Person]
