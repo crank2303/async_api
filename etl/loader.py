@@ -4,9 +4,17 @@ import logging
 
 from elasticsearch import Elasticsearch
 
-from es_schema import index_json
+from es_schemas.genre_schema import GENRES_INDEX_BODY
+from es_schemas.filmwork_schema import FILMWORKS_INDEX_BODY
+from es_schemas.person_schema import PERSONS_INDEX_BODY
 from settings import settings
 from state import State
+
+INDEXES = {
+    "persons": PERSONS_INDEX_BODY,
+    "genres": GENRES_INDEX_BODY,
+    "movies": FILMWORKS_INDEX_BODY,
+}
 
 
 class ElasticsearchLoader:
@@ -18,9 +26,10 @@ class ElasticsearchLoader:
 
     def create_index(self):
         """Create index in ES."""
-        if not self.es.indices.exists(index=settings.es_index_name):
-            self.es.indices.create(index=settings.es_index_name, body=index_json)
-            logging.info("Index in ES created!")
+        for index in INDEXES:
+            if not self.es.indices.exists(index=index):
+                self.es.indices.create(index=index, body=INDEXES[index])
+                logging.info("Index in ES created!")
 
     def bulk_create(self, data, state: State):
         """Create bulk in ES."""

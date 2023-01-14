@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     dsn: PostgresSettings = PostgresSettings()
     batch_size: int = os.environ.get('CHUNK_SIZE')
     es_host: str = os.environ.get('ES_URL')
-    es_index_name: str = os.environ.get('ES_INDEX_NAME')
     offset_counter: int = 0
 
 
