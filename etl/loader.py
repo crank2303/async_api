@@ -18,8 +18,9 @@ class ElasticsearchLoader:
 
     def create_index(self):
         """Create index in ES."""
-        self.es.indices.create(index=settings.es_index_name, body=index_json)
-        logging.info("Index in ES created!")
+        if not self.es.indices.exists(index=settings.es_index_name):
+            self.es.indices.create(index=settings.es_index_name, body=index_json)
+            logging.info("Index in ES created!")
 
     def bulk_create(self, data, state: State):
         """Create bulk in ES."""
