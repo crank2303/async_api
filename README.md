@@ -17,3 +17,32 @@
 
 # Как развернуть проект
 
+Склонируйте репозиторий
+```
+git clone git@github.com:crank2303/4_sprint_15_team.git
+```
+
+Перейдите в каталог с проектом
+```
+cd 4_sprint_15_team
+```
+
+Скопируйте файл настроек окружения
+```
+cp .env.example .env
+```
+
+Запустите сборку контейнера
+```
+docker compose up -d --build
+```
+<br>
+<hr>
+
+# Админка и API
+Для доступа в админку перейдите по адресу: 
+<a href="http://localhost:8082/admin">http://localhost:8082/admin
+```
+Логин: admin
+Пароль: admin
+```

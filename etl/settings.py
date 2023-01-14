@@ -1,32 +1,25 @@
 """Module with settings."""
+import os
 from pydantic import BaseSettings, Field
 
 
 class PostgresSettings(BaseSettings):
-    dbname: str = Field(..., env="DB_NAME")
-    user: str = Field(..., env="DB_USER")
-    password: str = Field(..., env="DB_PASSWORD")
-    host: str = Field(..., env="DB_HOST")
-    port: int = Field(..., env="DB_PORT")
-    options: str = Field(..., env="DB_OPTIONS")
-
-    class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+    dbname: str = os.environ.get('POSTGRES_DB')
+    user: str = os.environ.get('POSTGRES_USER')
+    password: str = os.environ.get('POSTGRES_PASSWORD')
+    host: str = os.environ.get('POSTGRES_HOST')
+    port: int = os.environ.get('POSTGRES_PORT')
+    options: str = os.environ.get('DB_OPTIONS')
 
 
 class Settings(BaseSettings):
-    last_state_key: str = Field(..., env="LAST_STATE_KEY")
-    state_file_path: str = Field(..., env="STATE_FILE_PATH")
+    last_state_key: str = os.environ.get('ETL_STATE_KEY')
+    state_file_path: str = os.environ.get('ETL_STATE_STORAGE')
     dsn: PostgresSettings = PostgresSettings()
-    batch_size: int = 100
-    es_host: str = Field(..., env="ES_HOST")
-    es_index_name: str = Field(..., env="ES_INDEX_NAME")
+    batch_size: int = os.environ.get('CHUNK_SIZE')
+    es_host: str = os.environ.get('ES_URL')
+    es_index_name: str = os.environ.get('ES_INDEX_NAME')
     offset_counter: int = 0
-
-    class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
 
 
 settings = Settings()
