@@ -85,6 +85,13 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
         blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
+    file_path = models.FileField(
+        blank=True,
+        null=True,
+        upload_to='movies/',
+        verbose_name=_('film_file_path'),
+        help_text=_('film_file_path_help_text'),
+    )
 
     class Type(models.TextChoices):
         """Class defines choice for type."""
