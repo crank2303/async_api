@@ -1,24 +1,35 @@
 from uuid import UUID
 from pydantic import BaseModel, validator
-from pydantic.schema import Optional
+from pydantic.schema import Optional, List
 
 
 class Person(BaseModel):
     id: UUID
     full_name: str
-    role: Optional[str]
-    film_ids: Optional[list]
+    actor_films: Optional[List]
+    writer_films: Optional[List]
+    director_films: Optional[List]
 
-    @validator('role')
-    def valid_role(cls, v):
-        if v is None:
-            return ''
-        return v
-
-    @validator('film_ids')
-    def valid_film_ids(cls, v):
-        if v is None:
+    @validator('actor_films')
+    def valid_actor_films(cls, value):
+        if value is None:
             return []
-        return v
+        return value
 
+    @validator('writer_films')
+    def valid_writer_films(cls, value):
+        if value is None:
+            return []
+        return value
 
+    @validator('director_films')
+    def valid_director_films(cls, value):
+        if value is None:
+            return []
+        return value
+
+    @validator('full_name')
+    def valid_full_name(cls, value):
+        if value is None:
+            return ''
+        return value

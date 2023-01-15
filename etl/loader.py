@@ -31,9 +31,17 @@ class ElasticsearchLoader:
                 self.es.indices.create(index=index, body=INDEXES[index])
                 logging.info("Index in ES created!")
 
-    def bulk_create(self, data, state: State):
+    def bulk_create(self, data, state: State, name_of_data: str):
         """Create bulk in ES."""
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        state.set_state(settings.last_state_key, now)
-        self.es.bulk(index=settings.es_index_name, body=data)
-        logging.info("Data loaded in ES!")
+        if data is None:
+            return None
+        else:
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            if name_of_data == "movies":
+                state.set_state(settings.last_state_key_movies, now)
+            elif name_of_data == "genres":
+                state.set_state(settings.last_state_key_genres, now)
+            elif name_of_data == "persons":
+                state.set_state(settings.last_state_key_persons, now)
+            self.es.bulk(index=name_of_data, body=data)
+            logging.info("Data loaded in ES!")

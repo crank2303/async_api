@@ -7,9 +7,9 @@ from pydantic.schema import List, Optional
 class Filmwork(BaseModel):
 
     id: UUID
-    imdb_rating: Optional[float]
+    rating: Optional[float]
     mpaa_rating: Optional[str]
-    genre: Optional[List]
+    genres: Optional[List]
     title: str
     description: Optional[str]
     director: Optional[List]

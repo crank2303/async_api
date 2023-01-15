@@ -1,4 +1,5 @@
-QUERY_FILMWORK = """
+from settings import settings
+QUERY_FILMWORK = f"""
     SELECT
         fw.id,
         fw.title,
@@ -22,5 +23,7 @@ QUERY_FILMWORK = """
     LEFT JOIN content.genre g ON g.id = gfw.genre_id
     WHERE GREATEST (fw.modified, p.modified, g.modified) > '%s'
     GROUP BY fw.id
-    ORDER BY fw.modified;
+    ORDER BY fw.modified
+    LIMIT {settings.batch_size}
+    OFFSET {settings.batch_size} * %d;
 """

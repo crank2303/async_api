@@ -17,11 +17,45 @@ PERSONS_INDEX_BODY: dict = {
                     },
                 },
             },
-
-            'film_ids': {
-                'type': 'keyword',
-                'analyzer': 'ru_en',
-            }
+            'actor_films': {
+                'type': 'nested',
+                'dynamic': 'strict',
+                'properties': {
+                    'id': {
+                        'type': 'keyword',
+                    },
+                    'title': {
+                        'type': 'text',
+                        'analyzer': 'ru_en',
+                    },
+                },
+            },
+            'writer_films': {
+                'type': 'nested',
+                'dynamic': 'strict',
+                'properties': {
+                    'id': {
+                        'type': 'keyword',
+                    },
+                    'title': {
+                        'type': 'text',
+                        'analyzer': 'ru_en',
+                    },
+                },
+            },
+            'director_films': {
+                'type': 'nested',
+                'dynamic': 'strict',
+                'properties': {
+                    'id': {
+                        'type': 'keyword',
+                    },
+                    'title': {
+                        'type': 'text',
+                        'analyzer': 'ru_en',
+                    },
+                },
+            },
         },
     },
 }

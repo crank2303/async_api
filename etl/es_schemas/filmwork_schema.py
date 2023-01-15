@@ -8,13 +8,13 @@ FILMWORKS_INDEX_BODY: dict = {
             'id': {
                 'type': 'keyword',
             },
-            'imdb_rating': {
+            'rating': {
                 'type': 'float',
             },
             'mpaa_rating': {
                 'type': 'text',
             },
-            'genre': {
+            'genres': {
                 'type': 'nested',
                 'dynamic': 'strict',
                 'properties': {
