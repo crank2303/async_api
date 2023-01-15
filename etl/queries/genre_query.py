@@ -1,9 +1,9 @@
-QUERY_GENRE = """
+QUERY = """
     SELECT
         g.id,
         g.name,
         g.description,
         g.modified
     FROM content.genre g
-    WHERE GREATEST (g.modified, g.created) > (TIMESTAMP '%s');
+    WHERE GREATEST (g.modified, g.created_at) > (TIMESTAMP '%s');
 """

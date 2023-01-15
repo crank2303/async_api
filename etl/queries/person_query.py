@@ -1,4 +1,4 @@
-QUERY_PERSON = """
+QUERY = """
     SELECT 
         p.id,
         p.full_name,
