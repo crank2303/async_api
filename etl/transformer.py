@@ -3,7 +3,7 @@ import logging
 
 import backoff
 
-from models import Movie, Person
+from models import filmwork_model, person_model, genre_model
 
 
 class DataTransformer:

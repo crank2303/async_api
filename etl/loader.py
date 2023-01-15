@@ -4,9 +4,9 @@ import logging
 
 from elasticsearch import Elasticsearch
 
-from es_schemas.genre_schema import GENRES_INDEX_BODY
-from es_schemas.filmwork_schema import FILMWORKS_INDEX_BODY
-from es_schemas.person_schema import PERSONS_INDEX_BODY
+from es_schemas.genre_schema import SCHEMA as GENRES_INDEX_BODY
+from es_schemas.filmwork_schema import SCHEMA as FILMWORKS_INDEX_BODY
+from es_schemas.person_schema import SCHEMA as PERSONS_INDEX_BODY
 from settings import settings
 from state import State
 

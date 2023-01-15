@@ -1,6 +1,6 @@
-from es_schemas.settings import SETTINGS_DATA
+from settings import SETTINGS_DATA
 
-FILMWORKS_INDEX_BODY: dict = {
+SCHEMA: dict = {
     **SETTINGS_DATA,
     'mappings': {
         'dynamic': 'strict',
