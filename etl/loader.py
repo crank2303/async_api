@@ -7,7 +7,6 @@ from elasticsearch import Elasticsearch
 from es_schemas.genre_schema import SCHEMA as GENRES_INDEX_BODY
 from es_schemas.filmwork_schema import SCHEMA as FILMWORKS_INDEX_BODY
 from es_schemas.person_schema import SCHEMA as PERSONS_INDEX_BODY
-from settings import settings
 from state import State
 
 INDEXES = {
@@ -31,9 +30,9 @@ class ElasticsearchLoader:
                 self.es.indices.create(index=index, body=INDEXES[index])
                 logging.info("Index in ES created!")
 
-    def bulk_create(self, data, state: State):
+    def bulk_create(self, data, state: State, schema:str):
         """Create bulk in ES."""
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        state.set_state(settings.last_state_key, now)
-        self.es.bulk(index=settings.es_index_name, body=data)
+        state.set_state(schema + '_last_update', now)
+        self.es.bulk(index=schema, body=data)
         logging.info("Data loaded in ES!")

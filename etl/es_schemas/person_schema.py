@@ -1,4 +1,4 @@
-from settings import SETTINGS_DATA
+from es_schemas.settings import SETTINGS_DATA
 
 SCHEMA: dict = {
     **SETTINGS_DATA,
@@ -17,10 +17,11 @@ SCHEMA: dict = {
                     },
                 },
             },
-
+            'role': {
+                'type': 'keyword'
+            },
             'film_ids': {
                 'type': 'keyword',
-                'analyzer': 'ru_en',
             }
         },
     },

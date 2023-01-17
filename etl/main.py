@@ -11,35 +11,69 @@ from queries import filmwork_query, genre_query, person_query
 from settings import settings
 from state import JsonFileStorage, State
 from transformer import DataTransformer
+from models.filmwork_model import Filmwork
+from models.genre_model import Genre
+from models.person_model import Person
 
-QUERIES ={
-    'filmwork': filmwork_query.QUERY,
-    'genre': genre_query.QUERY,
-    'person': person_query.QUERY
+
+INDEX = {
+    'movies': {'query': filmwork_query.QUERY,
+                'model': Filmwork,
+                'fields': ['id', 'title', 'description',
+                            'imdb_rating', 'type', 'creation_date',
+                            'modified', 'director', 'actors', 'writers',
+                            'genre'
+                            ],
+                'update_date': datetime.datetime.min,
+                'offset_counter': settings.offset_counter},
+
+    'genres': {'query': genre_query.QUERY,
+                'model': Genre,
+                'fields': ['id', 'name', 'description', 'modified'],
+                'update_date': datetime.datetime.min,
+                'offset_counter': settings.offset_counter},
+
+    'persons': {'query': person_query.QUERY,
+                'model': Person,
+                'fields': ['id', 'full_name', 'role', 'film_ids'],
+                'update_date': datetime.datetime.min,
+                'offset_counter': settings.offset_counter},
 }
 
+
 def main():
-    date_time = datetime.datetime.min  # Выбираем дату с которой будет выполняться перенос фильмов
+    
     es = Elasticsearch(settings.es_host, request_timeout=300)
     ElasticsearchLoader(es).create_index()  # Создание индекса
+    
     storage = JsonFileStorage(settings.state_file_path)  # Создание хранилища на основе файла
     state = State(storage)  # Создание состояния, привязанного к хранилищу
-    offset_counter = settings.offset_counter
+
     while True:
-        for schema in QUERIES:
-            query_movies = QUERIES[schema]
-            all_movies = PostgresExtractor().extract_modified_data(date=date_time, query=query_movies,
-                                                                   offset_counter=offset_counter)
-            offset_counter += 1
-            if all_movies is None:
+
+        for schema in INDEX:
+            all_data = PostgresExtractor().extract_modified_data(
+                date=INDEX[schema]['update_date'], query=INDEX[schema]['query'],
+                 offset_counter=INDEX[schema]['offset_counter'])                 
+
+            if all_data is None:
                 logging.info("No data")
-                date_time = state.get_state(schema + '_last_update')
+                INDEX[schema]['update_date'] = state.get_state(schema + '_last_update')
+                INDEX[schema]['offset_counter'] = 0
                 time.sleep(30)
                 continue
-            transformed_data = DataTransformer().data_to_es(data=all_movies, name_of_query=query_movies['name_of_query'])
-            ElasticsearchLoader(es).bulk_create(transformed_data, state)
+
+            transformed_data = DataTransformer().data_to_es(
+                data=all_data, schema=schema, 
+                model=INDEX[schema]['model'], fields=INDEX[schema]['fields'],
+                )
+
+            ElasticsearchLoader(es).bulk_create(
+                data=transformed_data, state=state, schema=schema)
             logging.info("Batch is loaded")
             time.sleep(5)
+            
+            INDEX[schema]['offset_counter'] += 1
 
 
 if __name__ == '__main__':

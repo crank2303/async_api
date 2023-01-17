@@ -76,7 +76,9 @@ class State:
             key: key
             value: value
         """
-        self.storage.save_state({key: value})
+        dict_for_rec = self.storage.retrieve_state()
+        dict_for_rec[key] = value
+        self.storage.save_state(dict_for_rec)
 
     def get_state(self, key: str) -> Optional[str]:
         """Get state for definite key.

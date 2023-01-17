@@ -1,4 +1,4 @@
-from settings import SETTINGS_DATA
+from es_schemas.settings import SETTINGS_DATA
 
 SCHEMA: dict = {
     **SETTINGS_DATA,
