@@ -17,12 +17,15 @@ SCHEMA: dict = {
                     },
                 },
             },
-            'role': {
-                'type': 'keyword'
-            },
-            'film_ids': {
+            'film_ids_actor': {
                 'type': 'keyword',
-            }
+            },
+            'film_ids_writer': {
+                'type': 'keyword',
+            },
+            'film_ids_director': {
+                'type': 'keyword',
+            },
         },
     },
 }

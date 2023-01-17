@@ -10,6 +10,7 @@ QUERY = f"""
         fw.type,
         fw.creation_date,
         fw.modified,
+        fw.mpaa_rating,
         JSON_AGG(DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))
         FILTER(WHERE pfw.role = 'director') AS director,
         JSON_AGG(DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))

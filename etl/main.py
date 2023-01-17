@@ -21,7 +21,7 @@ INDEX = {
                 'model': Filmwork,
                 'fields': ['id', 'title', 'description',
                             'imdb_rating', 'type', 'creation_date',
-                            'modified', 'director', 'actors', 'writers',
+                            'modified', 'mpaa_rating', 'director', 'actors', 'writers',
                             'genre'
                             ],
                 'update_date': datetime.datetime.min,
@@ -35,7 +35,8 @@ INDEX = {
 
     'persons': {'query': person_query.QUERY,
                 'model': Person,
-                'fields': ['id', 'full_name', 'role', 'film_ids'],
+                'fields': ['id', 'full_name', 'film_ids_actor',
+                'film_ids_writer', 'film_ids_director'],
                 'update_date': datetime.datetime.min,
                 'offset_counter': settings.offset_counter},
 }

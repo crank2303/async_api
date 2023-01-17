@@ -80,6 +80,7 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     title = models.CharField(_('name'), max_length=255)
     description = models.TextField(_('description'), blank=True)
     creation_date = models.DateField(_('creation date'), blank=True)
+    mpaa_rating = models.TextField(_('mpaa rating'), blank=True)
     rating = models.FloatField(
         _('rating'),
         blank=True,
