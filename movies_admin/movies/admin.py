@@ -40,7 +40,7 @@ class FilmworkAdmin(admin.ModelAdmin):
 
     inlines = (GenreFilmworkInline, PersonFilmworkInline)
 
-    list_display = ('title', 'type', 'creation_date', 'rating',)
+    list_display = ('title', 'type', 'creation_date', 'rating', 'mpaa_rating')
 
     list_filter = ('type',)
 

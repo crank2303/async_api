@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS content.film_work (
     type TEXT NOT NULL,
     certificate TEXT,
     file_path TEXT,
+    mpaa_rating TEXT,
     created timestamp with time zone,
     modified timestamp with time zone
 );

@@ -1,6 +1,6 @@
 from es_schemas.settings import SETTINGS_DATA
 
-PERSONS_INDEX_BODY: dict = {
+SCHEMA: dict = {
     **SETTINGS_DATA,
     'mappings': {
         'dynamic': 'strict',
@@ -17,11 +17,15 @@ PERSONS_INDEX_BODY: dict = {
                     },
                 },
             },
-
-            'film_ids': {
+            'film_ids_actor': {
                 'type': 'keyword',
-                'analyzer': 'ru_en',
-            }
+            },
+            'film_ids_writer': {
+                'type': 'keyword',
+            },
+            'film_ids_director': {
+                'type': 'keyword',
+            },
         },
     },
 }

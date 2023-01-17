@@ -1,11 +1,14 @@
-QUERY_FILMWORK = """
+from settings import settings
+
+
+QUERY = f"""
     SELECT
         fw.id,
         fw.title,
         fw.description,
         fw.rating,
         fw.type,
-        fw.created,
+        fw.creation_date,
         fw.modified,
         fw.mpaa_rating,
         JSON_AGG(DISTINCT jsonb_build_object('id', p.id, 'name', p.full_name))
@@ -22,5 +25,7 @@ QUERY_FILMWORK = """
     LEFT JOIN content.genre g ON g.id = gfw.genre_id
     WHERE GREATEST (fw.modified, p.modified, g.modified) > '%s'
     GROUP BY fw.id
-    ORDER BY fw.modified;
+    ORDER BY fw.modified
+    LIMIT {settings.batch_size}
+    OFFSET {settings.batch_size} * %d;
 """

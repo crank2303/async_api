@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     state_file_path: str = os.environ.get('ETL_STATE_STORAGE')
     dsn: PostgresSettings = PostgresSettings()
     batch_size: int = os.environ.get('CHUNK_SIZE')
-    es_host: str = os.environ.get('ES_URL')
+    es_host: str = os.environ.get('ES_URL', 'http://127.0.0.1:9200')
     offset_counter: int = 0
 
 
