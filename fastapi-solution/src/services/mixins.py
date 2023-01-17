@@ -82,17 +82,19 @@ class ServiceMixin:
         self,
         params: Union[
             GenreParams,
-        ]
+        ],
+        search_fields: Optional[list[str]],
     ) -> dict:
         sort = {}
         if isinstance(params, GenreParams):
             order = "desc" if params.sort.startswith("-") else "asc"
             sort_field = f"{params.sort.removeprefix('-')}"
             sort = {sort_field: {"order": order}}
-        else:
-            return {
-                "size": params.size,
-                "from": (params.number - 1) * params.size,
-                "query": {"match_all": {}},
-                "sort": sort,
-            }
+
+        return {
+            "size": params.size,
+            "from": (params.number - 1) * params.size,
+            "query": {"match_all": {}},
+            "sort": sort,
+        }
+
