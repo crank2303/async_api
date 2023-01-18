@@ -1,6 +1,5 @@
 import orjson
 
-from uuid import UUID
 from pydantic import BaseModel
 
 
@@ -10,7 +9,6 @@ def orjson_dumps(v, *, default):
 
 
 class MixinConfig(BaseModel):
-    uuid: UUID
 
     class Config:
         # Заменяем стандартную работу с json на более быструю

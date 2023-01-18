@@ -24,10 +24,12 @@ async def get_genres(
     params: GenreParams = Depends(),
     genre_service: GenreService = Depends(get_genre_service),
 ) -> list[Genre]:
-    es_genres = await genre_service.get_genres(params)
+    es_genres = await genre_service.get_list(params)
     if not es_genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NO_GENRES)
-    genres = [Genre(uuid=genre.uuid, name=genre.name) for genre in es_genres]
+    genres = [Genre(id=genre.id,
+                    name=genre.name,
+                    description=genre.description) for genre in es_genres]
     return genres
 
 
@@ -41,10 +43,12 @@ async def get_genres(
 async def genre_details(
     uuid: str, genre_service: GenreService = Depends(get_genre_service)
 ) -> Optional[Genre]:
-    es_genre = await genre_service.get_by_id(uuid, schema=Genre)
+    es_genre = await genre_service.get_by_id(uuid)
     if not es_genre:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail=GENRE_NOT_FOUND.format(uuid=uuid),
         )
-    return Genre(uuid=es_genre.uuid, name=es_genre.name)
+    return Genre(id=es_genre.id,
+                 name=es_genre.name,
+                 description=es_genre.description)
