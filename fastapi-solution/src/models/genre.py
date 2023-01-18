@@ -1,6 +1,8 @@
-from mixins import MixinConfig, MixinUUID
+from models.mixins import MixinConfig
 
 
-class Genre(MixinUUID, MixinConfig):
+class Genre(MixinConfig):
+    id: str
     name: str
     popular: float = 0.0
+    description: str = None

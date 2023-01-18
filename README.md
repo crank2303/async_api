@@ -46,3 +46,6 @@ docker compose up -d --build
 Логин: admin
 Пароль: admin
 ```
+
+Описание параметров эндроинтов доступно по адресу: 
+<a href="http://localhost:8082/api/openapi">http://localhost:8082/api/openapi
