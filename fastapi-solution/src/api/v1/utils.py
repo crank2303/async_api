@@ -44,14 +44,14 @@ class FilmParams:
             "imdb_rating",
             alias="sort",
             title="Сортировка по рейтингу",
-            description=(
+        description=(
                 "Сортирует по возрастанию и убыванию,"
                 " -field если нужна сортировка"
                 " по убыванию или field,"
                 " если нужна сортировка по возрастанию."
                 " По умолчанию сортирует по"
                 " полю imdb_rating по возрастанию."
-            ),
+                ),
         ),
         number: Optional[int] = Query(
             1,
@@ -65,7 +65,7 @@ class FilmParams:
             title="размер страницы",
             description="Количество документов на странице",
         ),
-        filter: Optional[str] = Query(
+            filter: Optional[str] = Query(
             default=None,
             alias="filter",
             title="Фильтрация по жанрам",
@@ -79,3 +79,38 @@ class FilmParams:
         self.number = number
         self.size = size
         self.filter = filter
+        
+
+class PersonParams:
+    def __init__(
+        self,
+        sort: Optional[str] = Query(
+            "name",
+            alias="sort",
+            title="Сортировка по имени",
+            description=(
+                "Сортирует по возрастанию и убыванию,"
+                " -field если нужна сортировка"
+                " по убыванию или field,"
+                " если нужна сортировка по возрастанию."
+                " По умолчанию сортирует по"
+                " полю name в алфавитном порядке."
+               ),
+        ),
+        number: Optional[int] = Query(
+            1,
+            alias="page[number]",
+            title="страница",
+            description="Порядковый номер страницы результатов",
+        ),
+        size: Optional[int] = Query(
+            50,
+            alias="page[size]",
+            title="размер страницы",
+            description="Количество документов на странице",
+        ),
+          ) -> None:
+        self.sort = sort
+        self.number = number
+        self.size = size
+        
