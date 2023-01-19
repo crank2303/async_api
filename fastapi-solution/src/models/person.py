@@ -1,9 +1,11 @@
 from uuid import UUID
-from mixins import MixinUUID, MixinConfig
+from models.mixins import MixinConfig
 from pydantic import Field
 
 
-class Person(MixinUUID, MixinConfig):
+class Person(MixinConfig):
+    id: str
     full_name: str
-    role: str
-    film_ids: list(UUID) = Field(exclude=True)
+    film_ids_director: list[UUID]
+    film_ids_writer: list[UUID] 
+    film_ids_actor: list[UUID]
