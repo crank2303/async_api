@@ -5,32 +5,59 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 
+from core import config
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.film import Film
+from services.mixins import CacheValue, ServiceMixin
 
-FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
-
-class FilmService:
+class FilmService(ServiceMixin):
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
         self.redis = redis
         self.elastic = elastic
+        self._index_name = 'movies'
 
-    # get_by_id возвращает объект фильма. Он опционален, так как фильм может отсутствовать в базе
     async def get_by_id(self, film_id: str) -> Optional[Film]:
-        # Пытаемся получить данные из кеша, потому что оно работает быстрее
-        film = await self._film_from_cache(film_id)
+        cache_key = self._build_cache_key(
+            [CacheValue(name='film_id', value=str(film_id))]
+        )
+        film = await self._film_from_cache(cache_key)
         if not film:
-            # Если фильма нет в кеше, то ищем его в Elasticsearch
             film = await self._get_film_from_elastic(film_id)
             if not film:
-                # Если он отсутствует в Elasticsearch, значит, фильма вообще нет в базе
                 return None
-            # Сохраняем фильм  в кеш
-            await self._put_film_to_cache(film)
-
+            await self._put_film_to_cache(cache_key, film)
         return film
+
+    async def get_list(self, params):
+        if params.filter is None:
+            doc = await self.elastic.search(
+                index=self._index_name,
+                from_=(params.number - 1) * params.size, size=params.size
+            )
+            return [Film(**d["_source"]) for d in doc["hits"]["hits"]]
+        else:
+            doc = await self.elastic.search(
+                index=self._index_name,
+                from_=(params.number - 1) * params.size, size=params.size,
+                body={
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "genre": {
+                                            "id": params.filter
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            )
+        return [Film(**d["_source"]) for d in doc["hits"]["hits"]]
 
     async def _get_film_from_elastic(self, film_id: str) -> Optional[Film]:
         try:
@@ -40,22 +67,16 @@ class FilmService:
         return Film(**doc['_source'])
 
     async def _film_from_cache(self, film_id: str) -> Optional[Film]:
-        # Пытаемся получить данные о фильме из кеша, используя команду get
-        # https://redis.io/commands/get
         data = await self.redis.get(film_id)
         if not data:
             return None
-
-        # pydantic предоставляет удобное API для создания объекта моделей из json
         film = Film.parse_raw(data)
         return film
 
-    async def _put_film_to_cache(self, film: Film):
-        # Сохраняем данные о фильме, используя команду set
-        # Выставляем время жизни кеша — 5 минут
-        # https://redis.io/commands/set
-        # pydantic позволяет сериализовать модель в json
-        await self.redis.set(film.id, film.json(), expire=FILM_CACHE_EXPIRE_IN_SECONDS)
+    async def _put_film_to_cache(self, cache_key: str, film: Film):
+        await self.redis.set(
+            cache_key, film.json(), expire=config.REDIS_CACHE_EXPIRE_SECONDS
+        )
 
 
 @lru_cache()

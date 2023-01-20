@@ -1,13 +1,19 @@
-from mixins import MixinUUID, MixinConfig
-from genre import Genre
-from person import Person
+from pydantic import BaseModel
+
+from models.mixins import  MixinConfig
+from models.genre import Genre
 
 
-class Serial(MixinUUID, MixinConfig):
+class Person(BaseModel):
+    id: str
+    name: str
+
+class Serial(MixinConfig):
+    id: str
     title: str = ''
     imdb_rating: float = 0.0
     description: str = ''
     genre: list[Genre]
     actors: list[Person]
     writers: list[Person]
-    directors: list[Person]
+    director: list[Person]
