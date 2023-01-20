@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from api.v1.utils import FilmParams
 from models.film import Film
@@ -12,10 +13,15 @@ FILM_NOT_FOUND = "Фильм с uuid {uuid} не найден в Elasticsearch."
 
 router = APIRouter()
 
+class FilmAPI(BaseModel):
+    id: str
+    title: str
+    imdb_rating: str
+
 
 @router.get(
     path="/",
-    response_model=list[Film],
+    response_model=list[FilmAPI],
     summary="Главная страница фильмов",
     description="Полный перечень фильмов",
     response_description="Список с неполной информацией о фильмах",
@@ -27,7 +33,7 @@ async def get_films(
     es_films = await film_service.get_list(params)
     if not es_films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NO_FILMS)
-    films = [Film(id=film.id,
+    films = [FilmAPI(id=film.id,
                   title=film.title,
                   imdb_rating=film.imdb_rating) for film in es_films]
     return films
