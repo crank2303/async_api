@@ -12,7 +12,7 @@ from models.film import Film
 from services.mixins import CacheValue, ServiceMixin
 
 
-class FilmService:
+class FilmService(ServiceMixin):
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
         self.redis = redis
         self.elastic = elastic
@@ -20,7 +20,7 @@ class FilmService:
 
     async def get_by_id(self, film_id: str) -> Optional[Film]:
         cache_key = self._build_cache_key(
-            [CacheValue(name='film_id', value=film_id)]
+            [CacheValue(name='film_id', value=str(film_id))]
         )
         film = await self._film_from_cache(cache_key)
         if not film:

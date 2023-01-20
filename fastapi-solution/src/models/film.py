@@ -1,4 +1,4 @@
-from serial import Serial
+from models.serial import Serial
 
 
 class Film(Serial):

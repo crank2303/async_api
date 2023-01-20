@@ -31,7 +31,7 @@ class PersonService(ServiceMixin):
             await self._put_person_to_cache(cache_key, person)
         return person
 
-    async def get_list(self, params):
+    async def get_list(self, params) -> list[Person]:
         doc = await self.elastic.search(
             index=self._index_name,
             from_=(params.number - 1) * params.size, size=params.size
