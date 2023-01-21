@@ -41,11 +41,13 @@ docker compose up -d --build
 
 # Админка и API
 Для доступа в админку перейдите по адресу: 
-<a href="http://localhost:8082/admin">http://localhost:8082/admin
+Локально: <a href="http://localhost:8082/admin">http://localhost:8082/admin
+Через Интернет: <a href="http://movies.house-me.ru/admin">http://lmovies.house-me.ru/admin
 ```
 Логин: admin
 Пароль: admin
 ```
 
 Описание параметров эндроинтов доступно по адресу: 
-<a href="http://localhost:8082/api/openapi">http://localhost:8082/api/openapi
+Локально: <a href="http://localhost:8082/api/openapi">http://localhost:8082/api/openapi
+Через Интернет: <a href="http://movies.house-me.ru/api/openapi">http://lmovies.house-me.ru/api/openapi
