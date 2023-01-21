@@ -85,7 +85,7 @@ class PersonParams:
     def __init__(
         self,
         sort: Optional[str] = Query(
-            "name",
+            "full_name",
             alias="sort",
             title="Сортировка по имени",
             description=(
