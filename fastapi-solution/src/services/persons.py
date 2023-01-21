@@ -38,6 +38,7 @@ class PersonService(ServiceMixin):
         )
         return [Person(**d["_source"]) for d in doc["hits"]["hits"]]
 
+
     async def _get_person_from_elastic(self, person_id: str) -> Optional[Person]:
         try:
             doc = await self.elastic.get(self._index_name, person_id)

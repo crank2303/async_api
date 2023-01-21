@@ -39,27 +39,26 @@ class FilmService(ServiceMixin):
             return [Film(**d["_source"]) for d in doc["hits"]["hits"]]
         q = {}
         if params.filter:
-            q = {
-                        "query": {
-                            "nested": {
-                                "path": "genre",
-                                "query": {
-                                    "bool": {
-                                        "must": [
-                                            {
-                                                "match": {
-                                                    "genre.name": params.filter
-                                                }
+            q["query"] ={
+                        "nested": {
+                            "path": "genre",
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "match": {
+                                                "genre.name": params.filter
                                             }
-                                        ]
-                                    }
+                                        }
+                                    ]
                                 }
                             }
                         }
                     }
+                    
 
         if params.sort:
-            q['sort'] = [{"imdb_rating" : {"order": "desc"}}]
+            q['sort'] = [{params.sort.replace('-','') : {"order": "asc" if "-" in params.sort else "desc"}}]
 
         doc = await self.elastic.search(
             index=self._index_name,

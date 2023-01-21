@@ -32,9 +32,20 @@ class GenreService(ServiceMixin):
         return genre
 
     async def get_list(self, params):
+        if params.sort is None:
+            doc = await self.elastic.search(
+                index=self._index_name,
+                from_=(params.number - 1) * params.size, size=params.size
+            )
+            return [Genre(**d["_source"]) for d in doc["hits"]["hits"]]
+        q = {}
+        if params.sort:
+            q['sort'] = [{params.sort.replace('-','') : {"order": "asc" if "-" in params.sort else "desc"}}]
+
         doc = await self.elastic.search(
             index=self._index_name,
-            from_=(params.number - 1) * params.size, size=params.size
+            from_=(params.number - 1) * params.size, size=params.size,
+            body= q
         )
         return [Genre(**d["_source"]) for d in doc["hits"]["hits"]]
 
