@@ -53,7 +53,10 @@ async def get_persons(
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NO_PERSON)
     
     persons = await prepare_person(es_persons)
-
+    if params.sort:
+        rev = False if '-' in params.sort else True
+        params.sort = params.sort.replace('-', '')
+        persons = sorted(persons, key=lambda x: x.dict()[params.sort], reverse=rev)
     return persons
 
 
@@ -78,8 +81,8 @@ async def prepare_person(persons: list[Person]) -> list [PersonAPI]:
         if person.film_ids_writer:
             person_fast_api.append(PersonAPI(id=person.id,
                     full_name=person.full_name,
-                    role='director',
-                    film_ids=person.film_ids_director))
+                    role='writer',
+                    film_ids=person.film_ids_writer))
     
     return person_fast_api
 
