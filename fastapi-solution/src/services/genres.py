@@ -37,24 +37,24 @@ class GenreService(ServiceMixin):
                 index=self._index_name,
                 from_=(params.number - 1) * params.size, size=params.size
             )
-            return [Genre(**d["_source"]) for d in doc["hits"]["hits"]]
+            return [Genre(**d['_source']) for d in doc['hits']['hits']]
         q = {}
         if params.sort:
-            q['sort'] = [{params.sort.replace('-','') : {"order": "asc" if "-" in params.sort else "desc"}}]
+            q['sort'] = [{params.sort.replace('-','') : {'order': 'asc' if '-' in params.sort else 'desc'}}]
 
         doc = await self.elastic.search(
             index=self._index_name,
             from_=(params.number - 1) * params.size, size=params.size,
             body= q
         )
-        return [Genre(**d["_source"]) for d in doc["hits"]["hits"]]
+        return [Genre(**d['_source']) for d in doc['hits']['hits']]
 
     async def _get_genre_from_elastic(self, genre_id: str) -> Optional[Genre]:
         try:
             doc = await self.elastic.get(self._index_name, genre_id)
         except NotFoundError:
             return None
-        return Genre(**doc["_source"])
+        return Genre(**doc['_source'])
 
     async def _genre_from_cache(self, genre_id: str) -> Optional[Genre]:
         data = await self.redis.get(genre_id)

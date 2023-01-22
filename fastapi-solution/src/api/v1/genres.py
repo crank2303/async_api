@@ -4,21 +4,20 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.v1.utils import GenreParams
+from api.v1.contstants import NO_GENRES, GENRE_NOT_FOUND
 from models.genre import Genre
 from services.genres import GenreService, get_genre_service
 
-NO_GENRES = "Не удалось получить жанры из Elasticsearch."
-GENRE_NOT_FOUND = "Жанр с uuid {uuid} не найден в Elasticsearch."
 
 router = APIRouter()
 
 
 @router.get(
-    path="/",
+    path='/',
     response_model=list[Genre],
-    summary="Главная страница жанров",
-    description="Полный перечень жанров",
-    response_description="Список с полной информацией о жанрах",
+    summary='Главная страница жанров',
+    description='Полный перечень жанров',
+    response_description='Список с полной информацией о жанрах',
 )
 async def get_genres(
     params: GenreParams = Depends(),
@@ -34,11 +33,11 @@ async def get_genres(
 
 
 @router.get(
-    "/{uuid}",
+    '/{uuid}',
     response_model=Optional[Genre],
-    summary="Поиск жанра по UUID",
-    description="Поиск жанра по UUID",
-    response_description="Полная информация о жанре",
+    summary='Поиск жанра по UUID',
+    description='Поиск жанра по UUID',
+    response_description='Полная информация о жанре',
 )
 async def genre_details(
     uuid: str, genre_service: GenreService = Depends(get_genre_service)
