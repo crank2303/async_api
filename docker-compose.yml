@@ -59,8 +59,8 @@ services:
       - "USE_SSL=false"
     env_file:
       - ./.env
-    ports:
-      - "9200:9200"
+    expose:
+      - 9200
     restart: unless-stopped
     volumes:
       - elasticsearch_volume:/var/lib/elasticsearch/data
@@ -85,8 +85,8 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - "6379:6379"
+    expose:
+      - 6379
     networks:
       - async_API_sprint_1
 

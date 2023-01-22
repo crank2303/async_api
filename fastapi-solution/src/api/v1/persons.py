@@ -3,45 +3,24 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
-from api.v1.utils import PersonParams
+from api.v1.utils import PersonParams, PersonSearchParams
+from api.v1.schemas import PersonAPI, FilmAPI, FilmData
+from api.v1.contstants import NO_PERSON, PERSON_NOT_FOUND
 from models.person import Person
 from services.persons import PersonService, get_person_service
 from services.film import FilmService, get_film_service
 
 
-NO_PERSON = "Не удалось получить данные о людях из Elasticsearch."
-PERSON_NOT_FOUND = "Человек с uuid {uuid} не найден в Elasticsearch."
-
-
 router = APIRouter()
 
 
-class PersonAPI(BaseModel):
-    id: str
-    full_name: str
-    role: str
-    film_ids: list[UUID]
-
-
-class FilmAPI(BaseModel):
-    uuid: UUID
-    title: str
-    imdb_rating: float
-
-
-class FilmData(BaseModel):
-    role: str
-    films_list: list[FilmAPI]
-
-
 @router.get(
-    path="/",
+    path='/',
     response_model=list[PersonAPI],
-    summary="Главная страница",
-    description="Полный перечень людей",
-    response_description="Список с полной информацией фильмов в которых принимали участие",
+    summary='Полный перечень людей',
+    description='Полный перечень людей',
+    response_description='Список с полной информацией фильмов в которых принимали участие',
 )
 async def get_persons(
     params: PersonParams = Depends(),
@@ -60,8 +39,35 @@ async def get_persons(
     return persons
 
 
+@router.get(
+    path='/search',
+    response_model=list[PersonAPI],
+    summary='Поиск по имени',
+    description='Поиск по имени',
+    response_description='Список ревелантных результатов',
+)
+async def get_search_persons(
+    params: PersonSearchParams = Depends(),
+    person_service: PersonService = Depends(get_person_service),
+) -> list[PersonAPI]:
+
+    es_persons = await person_service.get_search_list(params)
+    if not es_persons:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NO_PERSON)
+    
+    persons = await prepare_person(es_persons)
+    return persons
+
+
 async def prepare_person(persons: list[Person]) -> list [PersonAPI]:
-    """Преобразует к виду класса PersonAPI"""
+    '''Преобразует к виду класса PersonAPI
+    
+    Args:
+        persons: список людей
+        
+    Returns:
+        list[PersonAPI]: преобразованные данные для вывода в api
+    '''
 
     person_fast_api = []
     for person in persons:
@@ -88,11 +94,11 @@ async def prepare_person(persons: list[Person]) -> list [PersonAPI]:
 
 
 @router.get(
-    "/{uuid}",
+    '/{uuid}',
     response_model=Optional[list[PersonAPI]],
-    summary="Поиск актера по UUID",
-    description="Поиск актера по UUID",
-    response_description="Полная информация о человеке",
+    summary='Поиск актера по UUID',
+    description='Поиск актера по UUID',
+    response_description='Полная информация о человеке',
 )
 async def person_details(
     uuid: str, 
@@ -110,18 +116,27 @@ async def person_details(
 
 
 @router.get(
-    "/{uuid}/film",
+    '/{uuid}/film',
     response_model=list[FilmData],
-    summary="Информация о фильмах",
-    description="Информация о всех фильмах в которых человек принимал участие",
-    response_description="Полная информация о фильмах",
+    summary='Информация о фильмах',
+    description='Информация о всех фильмах в которых человек принимал участие',
+    response_description='Полная информация о фильмах',
 )
 async def person_films(
     uuid: str, 
     person_service: PersonService=Depends(get_person_service),
     film_service: FilmService=Depends(get_film_service),
     ) -> list[FilmData]:
-    """Формирует подробную информаю о фильмах которые/которых снимался человек"""
+    '''Формирует подробную информаю о фильмах которые/которых снимался человек
+    
+    Args:
+        uuid: id человека
+        person_service: экземляр класса PersonService
+        film_service: экземляр класса FilmService
+
+    Return:
+        list[FilmData]: список информации о фильмах по опрделенной роли
+    '''
 
     person_roles_films: list[PersonAPI] = await person_details(
         uuid, person_service) 
@@ -137,7 +152,15 @@ async def get_film_info(
     films_ids: list[UUID],
     film_service: FilmService=Depends(get_film_service),
     )->list[FilmAPI]:
-    "Получает данные по одной роли о фильмах из es"
+    '''Получает данные по одной роли о фильмах из es
+    
+    Args:
+        films_ids: id фильмов
+        film_service: экземпляр класса FilmService
+
+    Return:
+        list[FilmAPI]: список информации о фильмах
+    '''
 
     films_data = []
     for film_id in films_ids:

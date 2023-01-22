@@ -1,7 +1,23 @@
 import os
+
 from logging import config as logging_config
+from pydantic import BaseSettings, Field
 
 from core.logger import LOGGING
+
+
+# class Settings(BaseSettings):
+#     redis_host: str = Field(..., env='REDIS_HOST')
+#     redis_port: int = Field(..., env='REDIS_PORT')
+#     project_name: str = Field(..., env='PROJECT_NAME')
+#     elastic_host: str = Field(..., env='ELASTIC_HOST')
+#     elastic_port: int = Field(..., env='ELASTIC_PORT')
+#     base_dir: str = Field(..., env='BASE_DIR')
+
+#     class Congif:
+#         env_file = '.env'
+
+# setting = Settings()
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)

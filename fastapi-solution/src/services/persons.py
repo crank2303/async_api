@@ -36,7 +36,34 @@ class PersonService(ServiceMixin):
             index=self._index_name,
             from_=(params.number - 1) * params.size, size=params.size
         )
-        return [Person(**d["_source"]) for d in doc["hits"]["hits"]]
+        return [Person(**d['_source']) for d in doc['hits']['hits']]
+
+    
+    async def get_search_list(self, params) -> Optional[list[Person]]: 
+        if params.search_by_full_name is None:
+            doc = await self.elastic.search(
+                index=self._index_name,
+                from_=(params.number - 1) * params.size, size=params.size
+            )
+            return [Person(**d['_source']) for d in doc['hits']['hits']]
+        q = {
+            'query': {
+                'multi_match': {
+                    'query': params.search_by_full_name,
+                    'fuzziness': 'auto',
+                    'fields': [
+                        'full_name'
+                    ]
+                }
+            }
+        }
+        doc = await self.elastic.search(
+                                    index=self._index_name,
+                                    from_=(params.number - 1) * params.size, 
+                                    size=params.size,
+                                    body=q
+                                    )
+        return [Person(**d['_source']) for d in doc['hits']['hits']]
 
 
     async def _get_person_from_elastic(self, person_id: str) -> Optional[Person]:
@@ -44,7 +71,7 @@ class PersonService(ServiceMixin):
             doc = await self.elastic.get(self._index_name, person_id)
         except NotFoundError:
             return None
-        return Person(**doc["_source"])
+        return Person(**doc['_source'])
 
     async def _person_from_cache(self, person_id: str) -> Optional[Person]:
         data = await self.redis.get(person_id)

@@ -36,18 +36,18 @@ class FilmService(ServiceMixin):
                 index=self._index_name,
                 from_=(params.number - 1) * params.size, size=params.size
             )
-            return [Film(**d["_source"]) for d in doc["hits"]["hits"]]
+            return [Film(**d['_source']) for d in doc['hits']['hits']]
         q = {}
         if params.filter:
-            q["query"] ={
-                        "nested": {
-                            "path": "genre",
-                            "query": {
-                                "bool": {
-                                    "must": [
+            q['query'] ={
+                        'nested': {
+                            'path': 'genre',
+                            'query': {
+                                'bool': {
+                                    'must': [
                                         {
-                                            "match": {
-                                                "genre.name": params.filter
+                                            'match': {
+                                                'genre.name': params.filter
                                             }
                                         }
                                     ]
@@ -58,14 +58,42 @@ class FilmService(ServiceMixin):
                     
 
         if params.sort:
-            q['sort'] = [{params.sort.replace('-','') : {"order": "asc" if "-" in params.sort else "desc"}}]
+            q['sort'] = [{params.sort.replace('-','') : {'order': 'asc' if '-' in params.sort else 'desc'}}]
 
         doc = await self.elastic.search(
             index=self._index_name,
             from_=(params.number - 1) * params.size, size=params.size,
             body= q
         )
-        return [Film(**d["_source"]) for d in doc["hits"]["hits"]]
+        return [Film(**d['_source']) for d in doc['hits']['hits']]
+
+
+    async def get_search_list(self, params):
+        if params.search_by_title is None:
+            doc = await self.elastic.search(
+                index=self._index_name,
+                from_=(params.number - 1) * params.size, size=params.size
+            )
+            return [Film(**d['_source']) for d in doc['hits']['hits']]
+        q = {
+            'query': {
+                'multi_match': {
+                    'query': params.search_by_title,
+                    'fuzziness': 'auto',
+                    'fields': [
+                        'title'
+                    ]
+                }
+            }
+        }
+        doc = await self.elastic.search(
+                                    index=self._index_name,
+                                    from_=(params.number - 1) * params.size, 
+                                    size=params.size,
+                                    body=q
+                                    )
+        return [Film(**d['_source']) for d in doc['hits']['hits']]
+
 
     async def _get_film_from_elastic(self, film_id: str) -> Optional[Film]:
         try:

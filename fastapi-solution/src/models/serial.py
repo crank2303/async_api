@@ -4,7 +4,7 @@ from models.mixins import  MixinConfig
 from models.genre import Genre
 
 
-class Person(BaseModel):
+class Person(MixinConfig):
     id: str
     name: str
 
