@@ -5,7 +5,7 @@ from aioredis import Redis
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 
-from core import config
+from core.config import settings
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.film import Film
@@ -111,7 +111,7 @@ class FilmService(ServiceMixin):
 
     async def _put_film_to_cache(self, cache_key: str, film: Film):
         await self.redis.set(
-            cache_key, film.json(), expire=config.REDIS_CACHE_EXPIRE_SECONDS
+            cache_key, film.json(), expire=settings.redis_cache_expire_seconds
         )
 
 

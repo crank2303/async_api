@@ -9,7 +9,7 @@ from db.elastic import get_elastic
 from db.redis import get_redis
 from models.person import Person
 from services.mixins import CacheValue, ServiceMixin
-from core import config
+from core.config import settings
 
 
 class PersonService(ServiceMixin):
@@ -82,7 +82,7 @@ class PersonService(ServiceMixin):
 
     async def _put_person_to_cache(self, cache_key: str, person: Person):
         await self.redis.set(
-            cache_key, person.json(), expire=config.REDIS_CACHE_EXPIRE_SECONDS
+            cache_key, person.json(), expire=settings.redis_cache_expire_seconds
         )
 
 
