@@ -9,7 +9,7 @@ from db.elastic import get_elastic
 from db.redis import get_redis
 from models.genre import Genre
 from services.mixins import CacheValue, ServiceMixin
-from core import config
+from core.config import settings
 
 
 class GenreService(ServiceMixin):
@@ -65,7 +65,7 @@ class GenreService(ServiceMixin):
 
     async def _put_genre_to_cache(self, cache_key: str, genre: Genre):
         await self.redis.set(
-            cache_key, genre.json(), expire=config.REDIS_CACHE_EXPIRE_SECONDS
+            cache_key, genre.json(), expire=settings.redis_cache_expire_seconds
         )
 
 
